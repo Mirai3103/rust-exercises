@@ -91,7 +91,7 @@ mod tests {
     #[test]
     fn test_count_char_occurrences() {
         assert_eq!(count_char_occurrences("Hello", 'l'), 2);
-        assert_eq!(count_char_occurrences("Rust is fun", 'u'), 1);
+        assert_eq!(count_char_occurrences("Rust is fun", 'u'), 2);
         assert_eq!(count_char_occurrences("Mississippi", 's'), 4);
     }
 }
