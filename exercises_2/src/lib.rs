@@ -4,7 +4,7 @@ fn exercise1() {
     // Use as many approaches as you can to make it work
     let x = String::from("hello, world");
     let y = x;
-    let z = x;
+    let z = y;
 }
 
 // Exercise 2
@@ -19,7 +19,8 @@ fn exercise2() {
 // Only modify the code below!
 fn take_ownership(s: String) -> String {
     //println!("{}", s);
-    s
+    let s2 = s;
+    s2
 }
 
 // Exercise 3
@@ -32,17 +33,16 @@ fn exercise3() {
         4695.71, 71.11, 2391.48, 331.29, 1214.69, 863.52, 7810.01,
     ];
 
-    let values_number = values.len();
+    let values_number: usize = values.len();
 
     let additions: Vec<usize> = vec![0];
 
     println!("{:?}", values_number);
-
     while additions.len() > 0 {
         let mut addition: f64 = 0.0;
 
         // Sumar valores en additions
-        for element_index in additions {
+        for &element_index in &additions {
             let addition_aux = values[element_index];
             addition = addition_aux + addition;
         }
@@ -53,8 +53,8 @@ fn exercise3() {
 // Make it compile
 fn exercise4(value: u32) -> &'static str {
     let str_value = value.to_string(); // Convert u32 to String
-    let str_ref: &str = &str_value; // Obtain a reference to the String
-    str_ref // Return the reference to the String
+    let str_ref: &str = Box::leak(str_value.into_boxed_str()); // Convert String to &str
+    str_ref // Return &str
 }
 
 // Exercise 5
@@ -70,7 +70,7 @@ fn exercise5() {
         None => {
             let value = "3.0".to_string();
             my_map.insert(key, value);
-            &value // HERE IT FAILS
+            my_map.get(&key).unwrap()
         }
     };
 
@@ -84,11 +84,10 @@ use std::io;
 
 fn exercise6() {
     let mut prev_key: &str = "";
-
     for line in io::stdin().lines() {
         let s = line.unwrap();
 
-        let data: Vec<&str> = s.split("\t").collect();
+        let data: Vec<&str> = Box::leak(s.into_boxed_str()).split("\t").collect();
         if prev_key.len() == 0 {
             prev_key = data[0];
         }
@@ -101,7 +100,7 @@ fn exercise7() {
     let mut v: Vec<&str> = Vec::new();
     {
         let chars = [b'x', b'y', b'z'];
-        let s: &str = std::str::from_utf8(&chars).unwrap();
+        let s: &str = std::str::from_utf8(Box::leak(chars.to_vec().into_boxed_slice())).unwrap();
         v.push(&s);
     }
     println!("{:?}", v);
@@ -119,7 +118,10 @@ fn exercise8() {
             .read_line(&mut add_input)
             .expect("Failed to read line");
 
-        let add_vec: Vec<&str> = add_input.trim()[..].split_whitespace().collect();
+        let add_vec: Vec<&str> = Box::leak(add_input.into_boxed_str())
+            .trim()
+            .split_whitespace()
+            .collect();
 
         if add_vec.len() < 1 {
             println!("Incorrect input, try again");
